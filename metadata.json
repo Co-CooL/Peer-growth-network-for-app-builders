@@ -1,0 +1,6 @@
+{
+  "name": "App Allies",
+  "description": "Curated featuring network where vetted indie apps promote each other — human-matched, with reported installs, for less than one day of ads.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

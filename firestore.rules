@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for lead submission
+    function isValidLead(data) {
+      return data.keys().hasAll(['email', 'source'])
+        && data.keys().hasOnly(['email', 'source', 'tier', 'timestamp', 'status'])
+        && data.email is string
+        && data.email.size() >= 5
+        && data.email.size() <= 128
+        && data.email.matches('^[^@]+@[^@]+\\.[^@]+$')
+        && data.source is string
+        && data.source.size() <= 64
+        && (!('tier' in data) || data.tier == null || (data.tier is string && data.tier.size() <= 64))
+        && (!('status' in data) || data.status == null || (data.status is string && data.status.size() <= 32));
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Leads collection: anyone may CREATE a lead with validated email; nobody may read, update, or delete
+    match /leads/{leadId} {
+      allow create: if isValidLead(request.resource.data);
+      allow read, update, delete: if false;
+    }
+  }
+}
